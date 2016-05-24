@@ -36,13 +36,22 @@ def main():
 
     node.start_http_server(args.listen)
 
-    g = node.Gauge('users_connected', 'Number of connected users')
+    gauges = {
+        'users': node.Gauge('mumble_users_connected', 'Number of connected users',
+            ['ice_server', 'server_id']),
+        'uptime': node.Gauge('mumble_uptime', 'Virtual uptime',
+            ['ice_server', 'server_id']),
+    }
+
+    ice_server = '%s:%d' % (ags.host, args.port)
     while True:
         t1 = time.time()
-        print('gathering statistics')
         with ice_connect(args.host, args.port) as meta:
             for server in meta.getBootedServers():
-                g.set(len(server.getUsers()))
+                labels = {'server_id': server.id(), 'ice_server': ice_server}
+                gauges['users'].labels(labels).set(len(server.getUsers()))
+                gauges['uptime'].labels(labels).set(server.getUptime())
+
         time_to_wait = args.interval - (time.time() - t1)
         if time_to_wait > 0:
             time.sleep(time_to_wait)
