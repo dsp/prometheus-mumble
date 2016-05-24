@@ -28,12 +28,13 @@ def ice_connect(host, port):
 
 def main():
     parser = argparse.ArgumentParser(description='Prometheus statistics for a Mumble ICE interface')
+    parser.add_argument('-l', '--listen', help='Port to listen on', default=9123, type=int)
     parser.add_argument('-H', '--host', help='Host of the Ice interface', default='127.0.0.1')
-    parser.add_argument('-p', '--port', help='Port of the Ice interface', default=6502)
-    parser.add_argument('-i', '--interval', help='Interval in seconds', default=60)
+    parser.add_argument('-p', '--port', help='Port of the Ice interface', default=6502, type=int)
+    parser.add_argument('-i', '--interval', help='Interval in seconds', default=60, type=int)
     args = parser.parse_args()
 
-    node.start_http_server(8001)
+    node.start_http_server(args.listen)
 
     g = node.Gauge('users_connected', 'Number of connected users')
     while True:
