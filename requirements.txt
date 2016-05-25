@@ -1,0 +1,2 @@
+prometheus-client==0.0.13
+zeroc-ice==3.6.2.1
