@@ -71,9 +71,9 @@ def main():
                 g_uptime = server.getUptime()
                 logger.debug('mumble_user_connected: %d' % g_user)
                 logger.debug('mumble_uptime: %d' % g_uptime)
-                labels = {'server_id': server.id(), 'ice_server': ice_server}
-                gauges['users'].labels(labels).set(g_user)
-                gauges['uptime'].labels(labels).set(g_uptime)
+                label_values = [ice_server, server.id()]
+                gauges['users'].labels(*label_values).set(g_user)
+                gauges['uptime'].labels(*label_values).set(g_uptime)
 
             time_to_wait = args.interval - (time.time() - t1)
             if time_to_wait > 0:
